@@ -37,6 +37,15 @@ export class AuthService {
       );
   }
 
+  register(firstName: string, lastName: string, username: string, password: string) {
+    return this.http.post<{user: User, token: string}>('/api/register', {firstName, lastName, username, password})
+      .pipe(
+        tap(res => this.jwtSrv.setToken(res.token)),
+        tap(res => this._currentUser$.next(res.user)),
+        map(res => res.user)
+      );
+  }
+
   logout() {
     this.jwtSrv.removeToken();
     this._currentUser$.next(null);

@@ -1,39 +1,19 @@
-import { Directive, OnInit, TemplateRef, ViewContainerRef, OnDestroy } from '@angular/core';
-import { takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
-import { AuthService } from '../services/auth.service';
+import { HttpHandler, HttpInterceptor, HttpRequest } from '@angular/common/http';
+import { Injectable } from '@angular/core';
+import { JwtService } from '../services/jwt.service';
 
-@Directive({
-  // tslint:disable-next-line: directive-selector
-  selector: '[ifAuthenticated]'
-})
-export class IfAuthenticatedDirective implements OnInit, OnDestroy {
-  protected destroyed$ = new Subject<void>();
+@Injectable()
+export class AuthInterceptor implements HttpInterceptor {
 
-  constructor(
-    private templateRef: TemplateRef<any>,
-    private viewContainer: ViewContainerRef,
-    protected authSrv: AuthService
-  ) { }
+  constructor(private jwtSrv: JwtService) {}
 
-  ngOnInit() {
-    this.authSrv.currentUser$
-      .pipe(takeUntil(this.destroyed$))
-      .subscribe(_ => {
-        this.updateView();
-      });
-  }
+  intercept(req: HttpRequest<any>, next: HttpHandler) {
+    const authToken = this.jwtSrv.getToken();
 
-  ngOnDestroy() {
-    this.destroyed$.next();
-    this.destroyed$.complete();
-  }
+    const authReq = authToken ? req.clone({
+      headers: req.headers.set('Authorization', `Bearer ${authToken}`)
+    }) : req;
 
-  private updateView() {
-    if (this.authSrv.isLoggedIn()) {
-        this.viewContainer.createEmbeddedView(this.templateRef);
-    } else {
-      this.viewContainer.clear();
-    }
+    return next.handle(authReq);
   }
 }
