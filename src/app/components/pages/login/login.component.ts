@@ -23,7 +23,6 @@ export class LoginComponent implements OnInit, OnDestroy {
   })
 
   hide = true;
-  loginError = '';
 
   options: AnimationOptions = {
     path: "/assets/images/Animation.json"
@@ -46,12 +45,19 @@ export class LoginComponent implements OnInit, OnDestroy {
       .pipe(
         takeUntil(this.destroyed$)
       )
-      .subscribe(() => {
-        this.loginError = '';
-      });
+      .subscribe(value => {
+        setTimeout(() => {      
+          if(this.loginForm.value.email || this.loginForm.value.password){
+            this.toastsMessagesService.showInfo("Passati 30 secondi, credenziali cancellate")
+            this.loginForm.reset();
+          }
+        }, 30000);
+      })
   }
 
   ngOnDestroy(): void {
+    this.loginForm.value.email = "";
+    this.loginForm.value.password = "";
     this.destroyed$.next();
     this.destroyed$.complete();
   }
@@ -62,12 +68,11 @@ export class LoginComponent implements OnInit, OnDestroy {
       this.authSrv.login(email!, password!)
         .pipe(
           catchError(err => {
-            this.loginError = err.error.message;
             return throwError(() => err);   
           })
         )
         .subscribe(
-          (value) => this.router.navigate(['/dashboard']),
+          (value) => this.router.navigate(['/home']),
           (error: HttpErrorResponse) => {
             if(error.status === 401) this.toastsMessagesService.showError("Email o password non corretti")
           }

@@ -1,11 +1,11 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormControl, Validators } from '@angular/forms';
+import { AbstractControl, FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject, catchError, takeUntil, throwError } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { ToastsMessagesService } from 'src/app/services/toasts-messages.service';
-import { MyErrorStateMatcher } from 'src/assets/utils/default.error-matcher';
+import { ConfirmStateMatcher, MyErrorStateMatcher } from 'src/utils/default.error-matcher';
 
 @Component({
   selector: 'app-register',
@@ -16,18 +16,38 @@ export class RegisterComponent implements OnInit, OnDestroy {
   registerForm = this.fb.group({
     firstName: new FormControl('', [Validators.required]),
     lastName: new FormControl('', [Validators.required]),
-    email: new FormControl('', [  	Validators.required, Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")]),
-    password: new FormControl('', [Validators.required, Validators.pattern("^(?=.*[a-z])(?=.*[A-Z])(?=.*([0-9]|[^A-Za-z0-9])).{8,}$")])
+    email: new FormControl('', [Validators.required, Validators.pattern("^[a-z0-9._%+-]+@[a-z0-9.-]+\\.[a-z]{2,4}$")]),
+    password: new FormControl('', [Validators.required, Validators.pattern("^(?=.*[a-z])(?=.*[A-Z])(?=.*([0-9]|[^A-Za-z0-9])).{8,}$")]),
+    confirmPassword: new FormControl('', [Validators.required])
+  }, {
+    validators: [
+      (group: FormGroup) => {
+        const pValue = group.controls['password'].value;
+        const cValue = group.controls['confirmPassword'].value;
+        if (pValue !== cValue) {
+          return {passwordMissmatch: true};
+        } else {
+          return null;
+        }
+      }
+    ]
   })
 
   matcher = new MyErrorStateMatcher();
+  matcherConfirm = new ConfirmStateMatcher();
 
   hide = true;
+  hideConfirm = true;
   loginError = '';
 
   togglePasswordVisibility(event: Event){
     event.stopPropagation();
     this.hide = !this.hide;
+  }
+
+  togglePasswordVisibilityConfirm(event: Event){
+    event.stopPropagation();
+    this.hideConfirm = !this.hide;
   }
 
   private destroyed$ = new Subject<void>();
@@ -43,6 +63,7 @@ export class RegisterComponent implements OnInit, OnDestroy {
         takeUntil(this.destroyed$)
       )
       .subscribe(() => {
+        console.log(this.registerForm.errors)
         this.loginError = '';
       });
   }
@@ -54,8 +75,8 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   register() {
     if (this.registerForm.valid) {
-      const { firstName, lastName, email, password } = this.registerForm.value;
-      this.authSrv.register(firstName!, lastName!, email!, password!)
+      const { firstName, lastName, email, password, confirmPassword } = this.registerForm.value;
+      this.authSrv.register(firstName!, lastName!, email!, password!, confirmPassword!)
         .pipe(
           catchError(err => {
             this.loginError = err.error.message;
@@ -83,16 +104,10 @@ export class RegisterComponent implements OnInit, OnDestroy {
 
   getPasswordMessage() {
     const password = this.registerForm.get('password');
-    let message = "Caratteri: ";
-
-    if(password?.invalid){
-      if(password.value!.length < 8){
-        message += "minimo 8"
-      }
+    let message = "";
 
       // Verifica se la password contiene almeno un carattere maiuscolo
       if (!/[A-Z]/.test(password!.value!)) {
-        if(message !== "") message += ", ";
         message += "1 maiuscola"
       }
 
@@ -107,8 +122,24 @@ export class RegisterComponent implements OnInit, OnDestroy {
         if(message !== "") message += ", ";
         message += "1 speciale o 1 numero";
       }
+
+      if(password?.invalid){
+        if(password.value!.length < 8){
+          if(message !== "") message += ", ";
+          message += "minimo 8"
+        }
     }
 
-    return message;
+    return `${message}`;
+  }
+
+  getPasswordMessageConfirm() {
+    const password = this.registerForm.get('password');
+    const passwordConfirm = this.registerForm.get('confirmPassword');
+    console.log("Ci")
+    if(password?.value !== passwordConfirm?.value) {
+      return "Le password devono essere uguali"
+    }
+    return ""
   }
 }

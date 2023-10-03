@@ -3,11 +3,16 @@ import { RouterModule, Routes } from '@angular/router';
 import { LoginComponent } from './components/pages/login/login.component';
 import { RegisterComponent } from './components/pages/register/register.component';
 import { AuthComponent } from './components/auth/auth.component';
-import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { HomeComponent } from './components/home/home.component';
+import { authGuard } from './guards/auth.guard';
+import { justLoggedGuard } from './guards/just-logged.guard';
+import { NavbarComponent } from './components/navbar/navbar.component';
+import { ProfileComponent } from './components/profile/profile.component';
 
 const routes: Routes = [
   {
     path: 'auth',
+    canActivate: [justLoggedGuard],
     component: AuthComponent,
     children: [
       {
@@ -26,8 +31,29 @@ const routes: Routes = [
     ]
   },
   {
-    path: 'dashboard',
-    component: DashboardComponent
+    path: '',
+    component: NavbarComponent,
+    canActivate: [authGuard],
+    children: [
+      {
+        path: 'home',
+        component: HomeComponent
+      },
+      {
+        path: 'profile',
+        component: ProfileComponent
+      },
+      {
+        path: '',
+        redirectTo: 'home',
+        pathMatch: 'full'
+      }
+    ]
+  },
+  {
+    path: '',
+    redirectTo: 'auth',
+    pathMatch: 'full'
   }
 ];
 

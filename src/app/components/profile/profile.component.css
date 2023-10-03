@@ -1,0 +1,17 @@
+mat-card{
+    width: 800px;
+    max-width: 98%;
+    padding: 10px;
+    margin-left: auto;
+    margin-right: auto;
+    background: rgb(0,255,255);
+    background: linear-gradient(90deg, rgba(0,255,255,1) 10%, rgba(50,205,50,1) 100%);
+}  
+img{
+    max-width: 250px;
+    border: 2px solid #008B8B;
+    border-radius: 250px !important;
+}
+h2{
+    font-weight: 400;
+}

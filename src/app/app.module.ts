@@ -14,9 +14,22 @@ import player from 'lottie-web';
 import { AuthComponent } from './components/auth/auth.component';
 import { MAT_FORM_FIELD_DEFAULT_OPTIONS } from '@angular/material/form-field';
 import { AuthInterceptor } from './interceptors/auth.interceptor';
-import { DashboardComponent } from './components/dashboard/dashboard.component';
+import { HomeComponent } from './components/home/home.component';
 import { primeng } from './primeng';
 import { MessageService } from 'primeng/api';
+import { NavbarComponent } from './components/navbar/navbar.component';
+import { MatIconRegistry } from '@angular/material/icon';
+import { Movimenti1Component } from './components/movimenti1/movimenti1.component';
+import { ApexchartsComponent } from './components/apexcharts/apexcharts.component';
+import { DateUfficialPipe } from './pipes/date-ufficial.pipe';
+import { NgProgressModule } from "ngx-progressbar";
+import { NgProgressHttpModule } from "ngx-progressbar/http";
+import { NgApexchartsModule } from 'ng-apexcharts';
+import { ProfileComponent } from './components/profile/profile.component';
+import { DialogDetailComponent } from './components/dialog-detail/dialog-detail.component';
+import { DateTimeUfficialPipe } from './pipes/date-time-ufficial.pipe';
+import { CommonModule } from '@angular/common';
+import { ChangePasswordComponent } from './components/change-password/change-password.component';
 
 export function playerFactory() {
   return player;
@@ -28,7 +41,15 @@ export function playerFactory() {
     RegisterComponent,
     LoginComponent,
     AuthComponent,
-    DashboardComponent
+    HomeComponent,
+    NavbarComponent,
+    Movimenti1Component,
+    ApexchartsComponent,
+    DateUfficialPipe,
+    ProfileComponent,
+    DialogDetailComponent,
+    DateTimeUfficialPipe,
+    ChangePasswordComponent
   ],
   imports: [
     BrowserModule,
@@ -38,15 +59,21 @@ export function playerFactory() {
     FormsModule,
     HttpClientModule,
     LottieModule.forRoot({ player: playerFactory }),
+    NgProgressModule.withConfig({
+      color: "darkgreen"
+    }),
+    NgProgressHttpModule,
+    NgApexchartsModule,
+    CommonModule,
     materials,
     primeng
   ],
   providers: [
-    { provide: LOCALE_ID, useValue: 'it-IT' },
     { provide: DEFAULT_CURRENCY_CODE, useValue: 'EUR'},
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true},
     {provide: MAT_FORM_FIELD_DEFAULT_OPTIONS, useValue: {appearance: 'outline'}},
-    MessageService
+    MessageService,
+    MatIconRegistry
   ],
   bootstrap: [AppComponent]
 })

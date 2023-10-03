@@ -10,6 +10,16 @@ export interface User {
   lastName: string;
   fullName: string;
   picture: string;
+  iban: string;
+  date: Date;
+}
+
+interface Balance {
+  balance: number
+}
+
+export interface AccountBalance {
+  accout: Balance[]
 }
 
 @Injectable({providedIn: 'root'})
@@ -37,8 +47,8 @@ export class AuthService {
       );
   }
 
-  register(firstName: string, lastName: string, username: string, password: string) {
-    return this.http.post<{user: User, token: string}>('/api/register', {firstName, lastName, username, password})
+  register(firstName: string, lastName: string, username: string, password: string, confermaPassword: string) {
+    return this.http.post<{user: User, token: string}>('/api/register', {firstName, lastName, username, password, confermaPassword})
       .pipe(
         tap(res => this.jwtSrv.setToken(res.token)),
         tap(res => this._currentUser$.next(res.user)),
@@ -46,10 +56,24 @@ export class AuthService {
       );
   }
 
+  changePassword(oldPassword: string, newPassword: string){
+    return this.http.patch<{message: string}>('/api/changePassword', {oldPassword, newPassword})
+      .pipe(
+        map(res => res.message)
+      )
+  }
+
   logout() {
     this.jwtSrv.removeToken();
     this._currentUser$.next(null);
-    this.router.navigate(['/']);
+    this.router.navigate(['/auth/login']);
+  }
+
+  getBalance() {
+    return this.http.get<AccountBalance>('/api/users/balance')
+      .pipe(
+        catchError(error => throwError(error))
+      )
   }
 
   private fetchUser() {
@@ -60,6 +84,9 @@ export class AuthService {
           return throwError(error)
         })
       )
-      .subscribe(user => this._currentUser$.next(user));
+      .subscribe(user => {
+        this._currentUser$.next(user);
+        console.log(user)
+      });
   }
 }

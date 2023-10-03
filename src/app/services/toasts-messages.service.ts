@@ -9,7 +9,7 @@ export class ToastsMessagesService {
 
   showSuccess(message: string) {
     this.messageService.clear();
-    this.messageService.add({ severity: 'success', summary: 'Success', detail: message });
+    this.messageService.add({ severity: 'success', summary: 'Successo', detail: message });
   }
 
   showInfo(message: string) {
@@ -19,11 +19,11 @@ export class ToastsMessagesService {
 
   showWarn(message: string) {
     this.messageService.clear();
-    this.messageService.add({ severity: 'warn', summary: 'Warn', detail: message });
+    this.messageService.add({ severity: 'warn', summary: 'Attenzione', detail: message });
   }
 
   showError(message: string) {
     this.messageService.clear();
-    this.messageService.add({ severity: 'error', summary: 'Error', detail: message });
+    this.messageService.add({ severity: 'error', summary: 'Errore', detail: message });
   }
 }
