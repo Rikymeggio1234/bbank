@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { MatStepper } from '@angular/material/stepper';
 import { Subject, catchError, throwError } from 'rxjs';
 import { AuthService } from 'src/app/services/auth.service';
 import { ToastsMessagesService } from 'src/app/services/toasts-messages.service';
@@ -99,7 +100,7 @@ export class ChangePasswordComponent {
     }
   }
 
-  changePassword(){
+  changePassword(stepper: MatStepper){
     this.passwordForm
     if (this.passwordForm.valid  && this.newPasswordForm.valid && this.repeatPasswordForm.valid) {
       const password = this.passwordForm.value.password; 
@@ -108,18 +109,17 @@ export class ChangePasswordComponent {
         .pipe(
           catchError(err => {
             if(err.status === 401) this.toastsMessagesService.showError("Password vecchia sbagliata")
-            this.toastsMessagesService.showError("Errore")
+            else this.toastsMessagesService.showError("Errore")
             return throwError(() => err);   
           })
         )
         .subscribe(() => {
           this.toastsMessagesService.showSuccess("Password cambiata")
-          this.passwordForm.value.password = ''
-          this.newPasswordForm.value.newPassword = ''
-          this.repeatPasswordForm.value.repeatPassword = ''
+          this.passwordForm.reset()
+          this.newPasswordForm.reset()
+          this.repeatPasswordForm.reset()
+          stepper.reset()
         });
-    }else{
-      console.log("Error")
     }
   }
 
@@ -127,7 +127,6 @@ export class ChangePasswordComponent {
     try{
       const password = this.newPasswordForm.get('newPassword');
       const passwordConfirm = this.repeatPasswordForm.get('repeatPassword');
-      console.log("Ci")
       if(password?.value !== passwordConfirm?.value) {
         return "Le password devono essere uguali"
       }

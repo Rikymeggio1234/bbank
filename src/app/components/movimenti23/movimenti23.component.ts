@@ -61,10 +61,6 @@ export class Movimenti23Component {
     this.bankService.changeFilters(q as Filters);
   }
 
-  onPageChange() {
-    console.log("Ciao")
-  }
-
   reset() {
     this.first = 0;
     this.filtriForm.value.num = 5

@@ -1,7 +1,8 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/services/auth.service';
 import { BankService } from 'src/app/services/bank.service';
 import { ToastsMessagesService } from 'src/app/services/toasts-messages.service';
 
@@ -22,7 +23,8 @@ export class RicaricaTelefonoComponent {
   constructor(private bankService: BankService,
               private fb: FormBuilder,
               private toastsMessagesService: ToastsMessagesService,
-              private router: Router){
+              private router: Router,
+              private authService: AuthService){
   }
 
   ricaricaTelefono() {
@@ -37,6 +39,7 @@ export class RicaricaTelefonoComponent {
           },
           (error: HttpErrorResponse) => {
             let message = 'Errore generico, per favore riprova più tardi';
+            if(error.status === 400) message = "Credito non sufficente"
             this.toastsMessagesService.showError(message);
           }
         );

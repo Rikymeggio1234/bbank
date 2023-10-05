@@ -3,6 +3,7 @@ import { Injectable } from "@angular/core";
 import { Router } from "@angular/router";
 import { BehaviorSubject, catchError, map, tap, throwError } from "rxjs"
 import { JwtService } from "./jwt.service";
+import { environment } from "src/environments/environment";
 
 export interface User {
   id: string;
@@ -24,6 +25,8 @@ export interface AccountBalance {
 
 @Injectable({providedIn: 'root'})
 export class AuthService {
+  private url = environment.apiUrl;
+
   private _currentUser$ = new BehaviorSubject<User | null>(null);
 
   currentUser$ = this._currentUser$.asObservable();
@@ -39,7 +42,7 @@ export class AuthService {
   }
 
   login(username: string, password: string) {
-    return this.http.post<{user: User, token: string}>('/api/login', {username, password})
+    return this.http.post<{user: User, token: string}>(`${this.url}/api/login`, {username, password})
       .pipe(
         tap(res => this.jwtSrv.setToken(res.token)),
         tap(res => this._currentUser$.next(res.user)),
@@ -48,7 +51,7 @@ export class AuthService {
   }
 
   register(firstName: string, lastName: string, username: string, password: string, confermaPassword: string) {
-    return this.http.post<{user: User, token: string}>('/api/register', {firstName, lastName, username, password, confermaPassword})
+    return this.http.post<{user: User, token: string}>(`${this.url}/api/register`, {firstName, lastName, username, password, confermaPassword})
       .pipe(
         tap(res => this.jwtSrv.setToken(res.token)),
         tap(res => this._currentUser$.next(res.user)),
@@ -57,7 +60,7 @@ export class AuthService {
   }
 
   changePassword(oldPassword: string, newPassword: string){
-    return this.http.patch<{message: string}>('/api/changePassword', {oldPassword, newPassword})
+    return this.http.patch<{message: string}>(`${this.url}/api/changePassword`, {oldPassword, newPassword})
       .pipe(
         map(res => res.message)
       )
@@ -70,14 +73,14 @@ export class AuthService {
   }
 
   getBalance() {
-    return this.http.get<AccountBalance>('/api/users/balance')
+    return this.http.get<AccountBalance>(`${this.url}/api/users/balance`)
       .pipe(
         catchError(error => throwError(error))
       )
   }
 
   private fetchUser() {
-    this.http.get<User>('/api/users/me')
+    this.http.get<User>(`${this.url}/api/users/me`)
       .pipe(
         catchError(error => {
           if(this.isLoggedIn()) this.jwtSrv.removeToken();
@@ -86,7 +89,6 @@ export class AuthService {
       )
       .subscribe(user => {
         this._currentUser$.next(user);
-        console.log(user)
       });
   }
 }

@@ -63,7 +63,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
         takeUntil(this.destroyed$)
       )
       .subscribe(() => {
-        console.log(this.registerForm.errors)
         this.loginError = '';
       });
   }
@@ -89,9 +88,12 @@ export class RegisterComponent implements OnInit, OnDestroy {
             this.router.navigate(['/auth/login'])
           },
           (error: HttpErrorResponse) => {
+            if(error.status === 401) {
+              this.toastsMEssagesService.showInfo("Profilo già esistente")
+              return
+            };
             let message = 'Errore generico, per favore riprova più tardi';
-            if(error.status === 400) message = "Profilo già esistente";
-            this.toastsMEssagesService.showInfo(message);
+            this.toastsMEssagesService.showError(message);
           }
         );
     }
@@ -136,7 +138,6 @@ export class RegisterComponent implements OnInit, OnDestroy {
   getPasswordMessageConfirm() {
     const password = this.registerForm.get('password');
     const passwordConfirm = this.registerForm.get('confirmPassword');
-    console.log("Ci")
     if(password?.value !== passwordConfirm?.value) {
       return "Le password devono essere uguali"
     }

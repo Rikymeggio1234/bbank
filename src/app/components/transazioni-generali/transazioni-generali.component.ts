@@ -2,6 +2,7 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { Component } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/services/auth.service';
 import { BankService } from 'src/app/services/bank.service';
 import { ToastsMessagesService } from 'src/app/services/toasts-messages.service';
 
@@ -27,15 +28,18 @@ export class TransazioniGeneraliComponent {
   ]
   
   transazioneForm = this.fb.group({
-    amount: new FormControl(null, [Validators.required]),
+    amount: new FormControl(1, [Validators.required]),
     description: new FormControl('', [Validators.required]),
     categoryid: new FormControl(this.categoryid[0].id, [Validators.required]),
   })
 
+  max: number = 0
+
   constructor(private bankService: BankService,
               private fb: FormBuilder,
               private toastsMessagesService: ToastsMessagesService,
-              private router: Router){
+              private router: Router,
+              private authService: AuthService){
   }
 
   bonifico() {
@@ -53,5 +57,16 @@ export class TransazioniGeneraliComponent {
           }
         );
     }
+  }
+
+  ngOnInit(): void {
+    this.transazioneForm.valueChanges.subscribe(value => {
+      if(value.amount! > this.max){
+        this.transazioneForm.get('amount')?.setValue(this.max)        
+      }else if(value.amount! < 0){
+        this.transazioneForm.get('amount')?.setValue(1)        
+      }
+    })
+    this.authService.getBalance().subscribe(value => this.max = value.accout?.[0].balance)
   }
 }

@@ -1,3 +1,7 @@
+.container{
+    width: 500px;
+    max-width: 100%;
+}
 .title{
     display: flex;
     flex-direction: row;

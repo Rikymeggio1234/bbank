@@ -17,7 +17,6 @@ export class DialogDetailComponent {
     public dialogRef: MatDialogRef<DialogDetailComponent>,
     @Inject(MAT_DIALOG_DATA) public data: Transactions,
   ) {
-    console.log(data)
   }
 
   onNoClick(): void {

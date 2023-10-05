@@ -1,8 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { catchError, throwError } from 'rxjs';
+import { AuthService } from 'src/app/services/auth.service';
 import { BankService, Transactions } from 'src/app/services/bank.service';
 import { ToastsMessagesService } from 'src/app/services/toasts-messages.service';
 
@@ -11,17 +12,20 @@ import { ToastsMessagesService } from 'src/app/services/toasts-messages.service'
   templateUrl: './bonifico.component.html',
   styleUrls: ['./bonifico.component.css']
 })
-export class BonificoComponent {
+export class BonificoComponent implements OnInit {
   bonificoForm = this.fb.group({
     iban: new FormControl('', [Validators.required]),
-    amount: new FormControl(null, [Validators.required]),
+    amount: new FormControl(1, [Validators.required, Validators.min(1)]),
     description: new FormControl('', [Validators.required])
   })
+
+  max: number = 0;
 
   constructor(private bankService: BankService,
               private fb: FormBuilder,
               private toastsMessagesService: ToastsMessagesService,
-              private router: Router){
+              private router: Router,
+              private authService: AuthService){
   }
 
   bonifico() {
@@ -40,5 +44,16 @@ export class BonificoComponent {
           }
         );
     }
+  }
+
+  ngOnInit(): void {
+    this.bonificoForm.valueChanges.subscribe(value => {
+      if(value.amount! > this.max){
+        this.bonificoForm.get('amount')?.setValue(this.max)        
+      }else if(value.amount! < 0){
+        this.bonificoForm.get('amount')?.setValue(1)        
+      }
+    })
+    this.authService.getBalance().subscribe(value => this.max = value.accout?.[0].balance)
   }
 }
