@@ -15,7 +15,7 @@ import { ToastsMessagesService } from 'src/app/services/toasts-messages.service'
 export class BonificoComponent implements OnInit {
   bonificoForm = this.fb.group({
     iban: new FormControl('', [Validators.required]),
-    amount: new FormControl(1, [Validators.required, Validators.min(1)]),
+    amount: new FormControl(0, [Validators.required, Validators.min(1)]),
     description: new FormControl('', [Validators.required])
   })
 
@@ -51,7 +51,7 @@ export class BonificoComponent implements OnInit {
       if(value.amount! > this.max){
         this.bonificoForm.get('amount')?.setValue(this.max)        
       }else if(value.amount! < 0){
-        this.bonificoForm.get('amount')?.setValue(1)        
+        this.bonificoForm.get('amount')?.setValue(0)        
       }
     })
     this.authService.getBalance().subscribe(value => this.max = value.accout?.[0].balance)

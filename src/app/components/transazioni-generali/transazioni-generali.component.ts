@@ -28,7 +28,7 @@ export class TransazioniGeneraliComponent {
   ]
   
   transazioneForm = this.fb.group({
-    amount: new FormControl(1, [Validators.required]),
+    amount: new FormControl(0, [Validators.required, Validators.min(1)]),
     description: new FormControl('', [Validators.required]),
     categoryid: new FormControl(this.categoryid[0].id, [Validators.required]),
   })
@@ -64,7 +64,7 @@ export class TransazioniGeneraliComponent {
       if(value.amount! > this.max){
         this.transazioneForm.get('amount')?.setValue(this.max)        
       }else if(value.amount! < 0){
-        this.transazioneForm.get('amount')?.setValue(1)        
+        this.transazioneForm.get('amount')?.setValue(0)        
       }
     })
     this.authService.getBalance().subscribe(value => this.max = value.accout?.[0].balance)
