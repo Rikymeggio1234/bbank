@@ -2,13 +2,13 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { isNil, omitBy } from 'lodash';
-import { BehaviorSubject, ReplaySubject, catchError, combineLatest, of, switchMap, throwError } from 'rxjs';
+import { BehaviorSubject, ReplaySubject, catchError, combineLatest, of, switchMap, tap, throwError } from 'rxjs';
 
 export interface Filters {
-  num: number;
-  startDate: Date;
-  endDate: Date;
-  categoryId: string;
+  num?: number;
+  startDate?: string;
+  endDate?: string;
+  categoryId?: string;
 }
 
 export interface Categories {
@@ -35,6 +35,8 @@ export interface ListTransactions {
 export class BankService {  
   private _filters$ = new BehaviorSubject<Filters | null>(null);
   filters$ = this._filters$.asObservable();
+  private _type$ = new BehaviorSubject<Categories[] | null>(null);
+  type$ = this._type$.asObservable();
   private _requestUpdate$ = new ReplaySubject<void>();
 
   transactions$ = combineLatest([
@@ -59,9 +61,28 @@ export class BankService {
 
   constructor(private http: HttpClient) {
     this._requestUpdate$.next();
+    this.transactionType()
   }
 
   changeFilters(q: Filters){
     this._filters$.next(q);
+  }
+
+  bonifico(iban: string, amount: number, description: string){
+    const categoryid = "650d854dde65f59e517de0c5";
+    return this.http.post<Transactions>("/api/transaction", {iban, amount, categoryid, description})
+  }
+
+  ricaricaTelefono(amount: number, description: string){
+    const categoryid = "650d866cff8d876d587ff46a";
+    return this.http.post<Transactions>("/api/transaction", {amount, categoryid, description})
+  }
+
+  transazioneGenerale(amount: number, description: string, categoryid: string){
+    return this.http.post<Transactions>("/api/transaction", {amount, categoryid, description})
+  }
+  
+  transactionType(){
+    return this.http.get<Categories[]>("/api/transaction-type").subscribe(value => this._type$.next(value))
   }
 }

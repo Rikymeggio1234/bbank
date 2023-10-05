@@ -30,6 +30,12 @@ import { DialogDetailComponent } from './components/dialog-detail/dialog-detail.
 import { DateTimeUfficialPipe } from './pipes/date-time-ufficial.pipe';
 import { CommonModule } from '@angular/common';
 import { ChangePasswordComponent } from './components/change-password/change-password.component';
+import { BonificoComponent } from './components/bonifico/bonifico.component';
+import { RicaricaTelefonoComponent } from './components/ricarica-telefono/ricarica-telefono.component';
+import { TransazioniGeneraliComponent } from './components/transazioni-generali/transazioni-generali.component';
+import { Movimenti23Component } from './components/movimenti23/movimenti23.component';
+import { NgxMatDatetimePickerModule, NgxMatTimepickerModule } from '@angular-material-components/datetime-picker';
+import { MatNativeDateModule } from '@angular/material/core';
 
 export function playerFactory() {
   return player;
@@ -49,7 +55,11 @@ export function playerFactory() {
     ProfileComponent,
     DialogDetailComponent,
     DateTimeUfficialPipe,
-    ChangePasswordComponent
+    ChangePasswordComponent,
+    BonificoComponent,
+    RicaricaTelefonoComponent,
+    TransazioniGeneraliComponent,
+    Movimenti23Component
   ],
   imports: [
     BrowserModule,
@@ -65,6 +75,9 @@ export function playerFactory() {
     NgProgressHttpModule,
     NgApexchartsModule,
     CommonModule,
+    MatNativeDateModule,
+    NgxMatDatetimePickerModule,
+    NgxMatTimepickerModule,
     materials,
     primeng
   ],

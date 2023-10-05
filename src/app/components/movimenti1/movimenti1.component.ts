@@ -24,6 +24,10 @@ export class Movimenti1Component implements OnInit, OnDestroy {
   constructor(private bankService: BankService,
               public dialog: MatDialog){}
 
+              first: number = 0;
+
+              rows: number = 10;
+
   openDialog(transaction: Transactions): void {
     const dialogRef = this.dialog.open(DialogDetailComponent, {
       data: transaction,

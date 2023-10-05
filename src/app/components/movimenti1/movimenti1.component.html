@@ -33,5 +33,8 @@
             </div>
         </td>
       </tr>
-  </ng-template>
+  </ng-template>  
+    <div class="card flex justify-content-center">
+        <p-paginator [first]="first" [rows]="rows" [totalRecords]="120" [rowsPerPageOptions]="[10, 20, 30]"></p-paginator>
+    </div>
 </p-table>

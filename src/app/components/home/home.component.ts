@@ -31,7 +31,8 @@ export class HomeComponent implements OnDestroy {
   public chartOptions: Partial<ChartOptions>;
 
   constructor(private authService: AuthService,
-              private bankService: BankService) {
+              private bankService: BankService,
+              public dialog: MatDialog) {
     this.chartOptions = {
       series: [{
           name: "€",
@@ -84,12 +85,7 @@ export class HomeComponent implements OnDestroy {
   public updateSeries(transaction: ListTransactions | null) {
     this.chartOptions!.series = [];
     const arr = transaction?.transactions.map(value => {
-      console.log(value.categoryid.typology)
-      if(value.categoryid.typology === "Entrata"){
-        return value.amount
-      }else{
-        return -value.amount
-      }
+      return value.balance;
     });
     const arr2 = transaction?.transactions.map(value => {
       const v = new Date(value.date).toLocaleDateString()

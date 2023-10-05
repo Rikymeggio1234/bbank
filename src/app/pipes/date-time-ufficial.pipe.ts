@@ -5,7 +5,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 })
 export class DateTimeUfficialPipe implements PipeTransform {
 
-  transform(value: Date): string | null {
+  public transform(value: Date): string | null {
     let v;
     if(value) {
       const v1 = new Date(value).toLocaleDateString()
