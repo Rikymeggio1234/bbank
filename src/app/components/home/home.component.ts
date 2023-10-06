@@ -52,7 +52,7 @@ export class HomeComponent implements OnDestroy {
         colors: ['#008B8B']
       },
       title: {
-        text: 'Grafico fi bilancio',
+        text: 'Grafico di bilancio',
         align: 'left'
       },
       grid: {
