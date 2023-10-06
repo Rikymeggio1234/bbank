@@ -103,9 +103,9 @@ export class Movimenti23Component {
     })
 
     this.filtriForm.valueChanges.subscribe(value => {
-      if(this.filtriForm.get('num')?.value <= 0){
-        value.num = null
+      if(typeof(this.filtriForm.get('num')?.value) === "number" && this.filtriForm.get('num')?.value <= 0){
         this.filtriForm.get('num')?.setValue(null)
+        value.num = null
       }
       if(this.filtriForm.get('startDate')?.value){
         const startDate = new Date(this.filtriForm.get('startDate')?.value!).toISOString()
