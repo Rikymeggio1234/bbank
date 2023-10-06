@@ -20,7 +20,7 @@ import { exportTable } from 'src/utils/exportTable';
 })
 export class Movimenti23Component {
   filtriForm = this.fb.group({
-    num: new FormControl(5, [Validators.pattern("^[0-9]*$"), Validators.min(5)]),
+    num: new FormControl(),
     categoryId: new FormControl(),
     startDate: new FormControl(),
     endDate: new FormControl()
@@ -97,16 +97,15 @@ export class Movimenti23Component {
   ngOnInit() {
     this.bankService.transactions$.subscribe(value => {
       if(this.filtriForm.valid){
-        this.reset();
         const v = value as ListTransactions;
         this.transactions = v.transactions;
       }
     })
 
     this.filtriForm.valueChanges.subscribe(value => {
-      if(this.filtriForm.get('num')?.invalid){
-        this.filtriForm.get('num')?.setValue(5)
-        value.num = this.filtriForm.get('num')?.value
+      if(this.filtriForm.get('num')?.value <= 0){
+        value.num = null
+        this.filtriForm.get('num')?.setValue(null)
       }
       if(this.filtriForm.get('startDate')?.value){
         const startDate = new Date(this.filtriForm.get('startDate')?.value!).toISOString()
